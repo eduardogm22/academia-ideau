@@ -1,0 +1,19 @@
+Instalar o PostgreSQL versão 16.14.
+
+Acessar o terminal do Postgres (PSQL).
+No Windows, procure psql no menu iniciar.
+No Linux, digite no terminal: sudo -u postgres psql
+
+no PSQL, rode:
+
+create user nome_user with password 'senha_user';
+create database nome_banco;
+
+\c nome_banco;
+
+GRANT USAGE, CREATE ON SCHEMA public TO nome_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nome_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nome_user;
+
+Dentro da pasta API, copiar o arquivo .env.example e renomear para .env,
+em seguida preencher o .env com os dados do banco de dados.
