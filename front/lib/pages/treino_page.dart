@@ -3,8 +3,92 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import 'exercicio_page.dart';
 
-class TreinoPage extends StatelessWidget {
+enum TipoTreino {
+  academia,
+  laboral,
+}
+
+class TreinoPage extends StatefulWidget {
   const TreinoPage({super.key});
+
+  @override
+  State<TreinoPage> createState() => _TreinoPageState();
+}
+
+class _TreinoPageState extends State<TreinoPage> {
+  TipoTreino tipoTreino = TipoTreino.laboral;
+
+  void _escolherTipoTreino(TipoTreino tipo) {
+    setState(() {
+      tipoTreino = tipo;
+    });
+    Navigator.pop(context);
+  }
+
+  void _showTipoTreinoModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Escolha o tipo de treino',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.text,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Selecione a modalidade que você deseja realizar agora.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.secondaryText,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _OpcaoTreino(
+                titulo: 'Treino de Academia',
+                descricao: 'Força, hipertrofia e condicionamento',
+                icone: Icons.fitness_center_rounded,
+                selecionado: tipoTreino == TipoTreino.academia,
+                onTap: () => _escolherTipoTreino(TipoTreino.academia),
+              ),
+              const SizedBox(height: 12),
+              _OpcaoTreino(
+                titulo: 'Treino Laboral',
+                descricao: 'Alongamentos e exercícios no trabalho',
+                icone: Icons.accessibility_new_rounded,
+                selecionado: tipoTreino == TipoTreino.laboral,
+                onTap: () => _escolherTipoTreino(TipoTreino.laboral),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,49 +97,37 @@ class TreinoPage extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const TreinoHeader(),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 520),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TreinoResumoCard(),
-
-                        SizedBox(height: 22),
-
-                        Text(
-                          'EXERCÍCIOS',
-                          style: TextStyle(
-                            color: AppColors.green,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-
-                        SizedBox(height: 12),
-
-                        ExerciciosLista(),
-
-                        SizedBox(height: 14),
-
-                        AvisoCard(),
-
-                        SizedBox(height: 16),
-
-                        BotoesTreino(),
-
-                        SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
+            // Título Superior
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Text(
+                'Treino',
+                style: TextStyle(
+                  fontFamily: 'BebasNeue',
+                  fontSize: 36,
+                  color: AppColors.text,
+                  letterSpacing: -0.5,
                 ),
               ),
+            ),
+
+            // Card Seletor
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ModalidadeSelectorCard(
+                tipo: tipoTreino,
+                onTap: _showTipoTreinoModal,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            Expanded(
+              child: tipoTreino == TipoTreino.academia
+                  ? const TelaTreinoAcademia()
+                  : const TelaTreinoLaboral(),
             ),
           ],
         ),
@@ -64,85 +136,260 @@ class TreinoPage extends StatelessWidget {
   }
 }
 
-// CABEÇALHO
+class ModalidadeSelectorCard extends StatelessWidget {
+  final TipoTreino tipo;
+  final VoidCallback onTap;
 
-class TreinoHeader extends StatelessWidget {
-  const TreinoHeader({super.key});
+  const ModalidadeSelectorCard({
+    super.key,
+    required this.tipo,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
-      decoration: const BoxDecoration(
-        color: AppColors.green,
-        borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(34),
-        ),
-      ),
-      child: const Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'MEU TREINO',
-                  style: TextStyle(
-                    fontFamily: 'BebasNeue',
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w400,
-                    height: 1,
-                    letterSpacing: -0.5,
-                     wordSpacing: -1.5,  
-                  ),
-                ),
-                SizedBox(height: 3),
-                Text(
-                  'Seu treino laboral de hoje',
-                  style: TextStyle(
-                    color: Color(0xFFE3F0E8),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
+    final bool isAcademia = tipo == TipoTreino.academia;
 
-          NotificacaoIcon(),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: AppColors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                isAcademia ? Icons.fitness_center_rounded : Icons.accessibility_new_rounded,
+                color: AppColors.green,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isAcademia ? 'Treino de Academia' : 'Treino Laboral',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.text,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isAcademia ? 'Seu treino de hoje' : 'Alongamentos e exercícios',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.secondaryText,
+              size: 28,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class NotificacaoIcon extends StatelessWidget {
-  const NotificacaoIcon({super.key});
+class _OpcaoTreino extends StatelessWidget {
+  final String titulo;
+  final String descricao;
+  final IconData icone;
+  final bool selecionado;
+  final VoidCallback onTap;
+
+  const _OpcaoTreino({
+    required this.titulo,
+    required this.descricao,
+    required this.icone,
+    required this.selecionado,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        const Icon(
-          Icons.notifications_none_rounded,
-          color: Colors.white,
-          size: 27,
-        ),
-        Positioned(
-          right: 0,
-          top: -1,
-          child: Container(
-            width: 9,
-            height: 9,
-            decoration: const BoxDecoration(
-              color: AppColors.yellow,
-              shape: BoxShape.circle,
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selecionado ? AppColors.green.withValues(alpha: 0.05) : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selecionado ? AppColors.green : AppColors.border,
+            width: selecionado ? 2 : 1,
           ),
         ),
-      ],
+        child: Row(
+          children: [
+            Icon(
+              icone,
+              color: selecionado ? AppColors.green : AppColors.secondaryText,
+              size: 24,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    titulo,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: selecionado ? AppColors.green : AppColors.text,
+                    ),
+                  ),
+                  Text(
+                    descricao,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: selecionado ? AppColors.green.withValues(alpha: 0.7) : AppColors.secondaryText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (selecionado)
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.green,
+                size: 24,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TelaTreinoLaboral extends StatelessWidget {
+  const TelaTreinoLaboral({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100), // Padding extra para BottomNav
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'SEU TREINO',
+                style: TextStyle(
+                  color: AppColors.green,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              SizedBox(height: 12),
+              TreinoResumoCard(),
+              SizedBox(height: 28),
+              Text(
+                'EXERCÍCIOS',
+                style: TextStyle(
+                  color: AppColors.green,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: 12),
+              ExerciciosLista(),
+              SizedBox(height: 14),
+              AvisoCard(),
+              SizedBox(height: 16),
+              BotoesTreino(),
+              SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TelaTreinoAcademia extends StatelessWidget {
+  const TelaTreinoAcademia({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'SEU TREINO',
+                style: TextStyle(
+                  color: AppColors.green,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: const Column(
+                  children: [
+                    Icon(Icons.fitness_center_rounded, size: 48, color: AppColors.placeholder),
+                    SizedBox(height: 16),
+                    Text(
+                      'Treino de Academia',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Conteúdo do treino de academia em desenvolvimento.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.secondaryText),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
