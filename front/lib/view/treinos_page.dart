@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:front/enums/categorias_treino.dart';
 
 import '../theme/app_colors.dart';
 import 'exercicio_page.dart';
@@ -15,7 +16,7 @@ class TreinosPage extends StatefulWidget {
 }
 
 class _TreinosPageState extends State<TreinosPage> {
-  TipoTreino tipoTreino = TipoTreino.laboral;
+  TipoTreino tipoTreino = TipoTreino.academia;
 
   void _escolherTipoTreino(TipoTreino tipo) {
     setState(() {
@@ -59,7 +60,7 @@ class _TreinosPageState extends State<TreinosPage> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Selecione a modalidade que você deseja realizar agora.',
+                'Selecione a modalidade que você deseja.',
                 style: TextStyle(fontSize: 14, color: AppColors.secondaryText),
               ),
               const SizedBox(height: 24),
@@ -99,7 +100,7 @@ class _TreinosPageState extends State<TreinosPage> {
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 16),
               child: Text(
-                'Treino',
+                'Treinos',
                 style: TextStyle(
                   fontFamily: 'BebasNeue',
                   fontSize: 36,
@@ -332,55 +333,24 @@ class TelaTreinoAcademia extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        100,
+      ), // Padding extra para BottomNav
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'SEU TREINO',
-                style: TextStyle(
-                  color: AppColors.green,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: const Column(
-                  children: [
-                    Icon(
-                      Icons.fitness_center_rounded,
-                      size: 48,
-                      color: AppColors.placeholder,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Treino de Academia',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Conteúdo do treino de academia em desenvolvimento.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.secondaryText),
-                    ),
-                  ],
-                ),
-              ),
+              ExerciciosLista(),
+              SizedBox(height: 14),
+              AvisoCard(),
+              SizedBox(height: 16),
+              BotoesTreino(),
+              SizedBox(height: 10),
             ],
           ),
         ),
@@ -611,8 +581,107 @@ class InfoTreino extends StatelessWidget {
     );
   }
 }
+//eduardo
+class TreinosLista extends StatefulWidget {
+  const TreinosLista({super.key});
 
-// LISTA
+  static const treinos = [
+    ('uui1', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
+  ];
+
+  @override
+  State<TreinosLista> createState() => _TreinosListaState();
+}
+class _TreinosListaState extends State<TreinosLista> {
+  int _indiceAtual = 0;
+  bool _treinoConcluido = false;
+
+  void _concluirAtual() {
+    setState(() {
+      if (_indiceAtual < ExerciciosLista.exercicios.length - 1) {
+        _indiceAtual++;
+      } else {
+        _treinoConcluido = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final exercicioAtual = ExerciciosLista.exercicios[_indiceAtual];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!_treinoConcluido)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: TreinoResumoCard(
+              indiceAtual: _indiceAtual,
+              nome: exercicioAtual.$1,
+              categoria: exercicioAtual.$2,
+              series: exercicioAtual.$3,
+              repeticoes: exercicioAtual.$4,
+              onConcluido: _concluirAtual,
+            ),
+          )
+        else
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: AppColors.lightGreen,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.green),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.check_circle_rounded, color: AppColors.green),
+                SizedBox(width: 10),
+                Text(
+                  'Treino concluído!',
+                  style: TextStyle(
+                    color: AppColors.green,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: Text(
+            'EXERCÍCIOS',
+            style: TextStyle(
+              color: AppColors.green,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        ...List.generate(ExerciciosLista.exercicios.length, (index) {
+          if (!_treinoConcluido && index == _indiceAtual) {
+            return const SizedBox.shrink();
+          }
+          final exercicio = ExerciciosLista.exercicios[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: ExercicioCard(
+              numero: index + 1,
+              nome: exercicio.$1,
+              categoria: exercicio.$2,
+              series: exercicio.$3,
+              repeticoes: exercicio.$4,
+              concluido: _treinoConcluido || index < _indiceAtual,
+            ),
+          );
+        }),
+      ],
+    );
+  }
+}
+//eduardo
 
 class ExerciciosLista extends StatefulWidget {
   const ExerciciosLista({super.key});

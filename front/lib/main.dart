@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'pages/treinos_page.dart';
-import 'pages/relatorios_page.dart';
-import 'pages/historico_page.dart';
-import 'pages/perfil_page.dart';
+import 'view/treinos_page.dart';
+import 'view/relatorios_page.dart';
+import 'view/historico_page.dart';
+import 'view/perfil_page.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_theme.dart';
 

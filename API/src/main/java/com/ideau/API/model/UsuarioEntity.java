@@ -18,11 +18,8 @@ public class UsuarioEntity {
     @Column(nullable = false)
     Cargos cargo;
 
-    @Column(nullable = false)
-    String empresa;
-
     @Column
-    String setor;
+    SetorEntity setor;
 
     @Column(nullable = false, unique = true)
     String username;

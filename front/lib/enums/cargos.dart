@@ -1,0 +1,4 @@
+enum Cargos {
+  ADMIN,
+  USUARIO
+}
