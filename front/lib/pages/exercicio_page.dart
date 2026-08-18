@@ -1,8 +1,78 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
-class ExercicioPage extends StatelessWidget {
+class ExercicioPage extends StatefulWidget {
   const ExercicioPage({super.key});
+
+  @override
+  State<ExercicioPage> createState() => _ExercicioPageState();
+}
+
+class _ExercicioPageState extends State<ExercicioPage> {
+  static const int _totalSeries = 3;
+  static const int _duracaoSerie = 20;
+  static const int _duracaoTransicao = 3;
+
+  Timer? _timer;
+  int _serieAtual = 1;
+  int _segundos = _duracaoSerie;
+  bool _emTransicao = false;
+  bool _rodando = false;
+  bool _concluido = false;
+
+  void _alternarTimer() {
+    if (_concluido) {
+      Navigator.pop(context);
+      return;
+    }
+    if (_rodando) {
+      _timer?.cancel();
+      setState(() => _rodando = false);
+      return;
+    }
+    setState(() => _rodando = true);
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _avancar());
+  }
+
+  void _avancar() {
+    if (!mounted) return;
+    setState(() {
+      if (_segundos > 1) {
+        _segundos--;
+      } else if (_emTransicao) {
+        _serieAtual++;
+        _emTransicao = false;
+        _segundos = _duracaoSerie;
+      } else if (_serieAtual < _totalSeries) {
+        _emTransicao = true;
+        _segundos = _duracaoTransicao;
+      } else {
+        _timer?.cancel();
+        _segundos = 0;
+        _rodando = false;
+        _concluido = true;
+      }
+    });
+  }
+
+  void _reiniciar() {
+    _timer?.cancel();
+    setState(() {
+      _serieAtual = 1;
+      _segundos = _duracaoSerie;
+      _emTransicao = false;
+      _rodando = false;
+      _concluido = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +174,10 @@ class ExercicioPage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
+            _cronometroCard(),
+
+            const SizedBox(height: 24),
+
             const Text(
               'COMO FAZER',
               style: TextStyle(
@@ -140,14 +214,24 @@ class ExercicioPage extends StatelessWidget {
               width: double.infinity,
               height: 44,
               child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.check_rounded,
+                onPressed: _alternarTimer,
+                icon: Icon(
+                  _concluido
+                      ? Icons.check_rounded
+                      : _rodando
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
                   size: 20,
                 ),
-                label: const Text(
-                  'CONCLUIR EXERCÍCIO',
-                  style: TextStyle(
+                label: Text(
+                  _concluido
+                      ? 'CONCLUIR EXERCÍCIO'
+                      : _rodando
+                          ? 'PAUSAR'
+                          : (_serieAtual == 1 && _segundos == _duracaoSerie)
+                              ? 'INICIAR EXERCÍCIO'
+                              : 'CONTINUAR',
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                   ),
@@ -164,6 +248,83 @@ class ExercicioPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _cronometroCard() {
+    final double progresso = _emTransicao
+        ? (_duracaoTransicao - _segundos) / _duracaoTransicao
+        : (_duracaoSerie - _segundos) / _duracaoSerie;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _concluido
+                    ? 'EXERCÍCIO CONCLUÍDO'
+                    : _emTransicao
+                        ? 'PRÓXIMA SÉRIE EM'
+                        : 'SÉRIE $_serieAtual DE $_totalSeries',
+                style: const TextStyle(
+                  color: AppColors.green,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              IconButton(
+                onPressed: _reiniciar,
+                tooltip: 'Reiniciar',
+                icon: const Icon(Icons.refresh_rounded),
+                color: AppColors.secondaryText,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _concluido ? '✓' : '$_segundos',
+            style: TextStyle(
+              color: _emTransicao ? AppColors.yellow : AppColors.green,
+              fontSize: 64,
+              height: 1,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _concluido
+                ? 'Muito bem!'
+                : _emTransicao
+                    ? 'Prepare-se para continuar'
+                    : _rodando
+                        ? 'Mantenha o alongamento'
+                        : 'Toque em iniciar quando estiver pronto',
+            style: const TextStyle(
+              color: AppColors.secondaryText,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: _concluido ? 1 : progresso.clamp(0.0, 1.0),
+              minHeight: 7,
+              color: _emTransicao ? AppColors.yellow : AppColors.green,
+              backgroundColor: AppColors.lightGreen,
+            ),
+          ),
+        ],
       ),
     );
   }
