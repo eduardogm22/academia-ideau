@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/treino_page.dart';
+import 'pages/treinos_page.dart';
 import 'pages/relatorios_page.dart';
 import 'pages/historico_page.dart';
 import 'pages/perfil_page.dart';
@@ -36,7 +36,7 @@ class _MainNavigationState extends State<MainNavigation> {
   int paginaAtual = 0;
 
   final List<Widget> paginas = const [
-    TreinoPage(),
+    TreinosPage(),
     RelatoriosPage(),
     HistoricoPage(),
     PerfilPage(),

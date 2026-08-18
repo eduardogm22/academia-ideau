@@ -7,14 +7,14 @@ import 'exercicio_page.dart';
 
 enum TipoTreino { academia, laboral }
 
-class TreinoPage extends StatefulWidget {
-  const TreinoPage({super.key});
+class TreinosPage extends StatefulWidget {
+  const TreinosPage({super.key});
 
   @override
-  State<TreinoPage> createState() => _TreinoPageState();
+  State<TreinosPage> createState() => _TreinosPageState();
 }
 
-class _TreinoPageState extends State<TreinoPage> {
+class _TreinosPageState extends State<TreinosPage> {
   TipoTreino tipoTreino = TipoTreino.laboral;
 
   void _escolherTipoTreino(TipoTreino tipo) {
