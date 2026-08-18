@@ -8,11 +8,11 @@ import 'theme/app_colors.dart';
 import 'theme/app_theme.dart';
 
 void main() {
-  runApp(const LaboralApp());
+  runApp(const AcademiaIdeauApp());
 }
 
-class LaboralApp extends StatelessWidget {
-  const LaboralApp({super.key});
+class AcademiaIdeauApp extends StatelessWidget {
+  const AcademiaIdeauApp({super.key});
 
   @override
   Widget build(BuildContext context) {
