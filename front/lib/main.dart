@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'view/treinos_page.dart';
-import 'view/relatorios_page.dart';
 import 'view/historico_page.dart';
+import 'view/menu_page.dart';
 import 'view/perfil_page.dart';
+import 'view/relatorios_page.dart';
+import 'view/treinos_page.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_theme.dart';
 
@@ -35,15 +36,17 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int paginaAtual = 0;
 
-  final List<Widget> paginas = const [
-    TreinosPage(),
-    RelatoriosPage(),
-    HistoricoPage(),
-    PerfilPage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final paginas = <Widget>[
+      MenuPage(
+        onSelecionarPagina: (index) => setState(() => paginaAtual = index),
+      ),
+      const TreinosPage(),
+      const RelatoriosPage(),
+      const HistoricoPage(),
+      const PerfilPage(),
+    ];
     return Scaffold(
       body: Stack(
         children: [
@@ -98,6 +101,12 @@ class _MainNavigationState extends State<MainNavigation> {
                     },
 
                     items: const [
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.home_outlined, size: 22),
+                        activeIcon: Icon(Icons.home_rounded, size: 22),
+                        label: 'Início',
+                      ),
+
                       BottomNavigationBarItem(
                         icon: Icon(
                           Icons.fitness_center_rounded,
