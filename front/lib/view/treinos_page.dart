@@ -315,9 +315,7 @@ class TelaTreinoLaboral extends StatelessWidget {
             children: [
               ExerciciosLista(),
               SizedBox(height: 14),
-              AvisoCard(),
               SizedBox(height: 16),
-              BotoesTreino(),
               SizedBox(height: 10),
             ],
           ),
@@ -347,9 +345,7 @@ class TelaTreinoAcademia extends StatelessWidget {
             children: [
               ExerciciosLista(),
               SizedBox(height: 14),
-              AvisoCard(),
               SizedBox(height: 16),
-              BotoesTreino(),
               SizedBox(height: 10),
             ],
           ),
@@ -383,155 +379,6 @@ class TreinoResumoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'TREINO ATUAL',
-            style: TextStyle(
-              color: AppColors.green,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.4,
-            ),
-          ),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: AppColors.lightGreen,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.accessibility_new_rounded,
-                  color: AppColors.green,
-                  size: 25,
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      nome,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      categoria,
-                      style: const TextStyle(
-                        color: AppColors.secondaryText,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          const Row(
-            children: [
-              Expanded(
-                child: InfoTreino(
-                  icon: Icons.timer_outlined,
-                  valor: '25 min',
-                  label: 'Duração',
-                ),
-              ),
-
-              SizedBox(width: 6),
-
-              Expanded(
-                child: InfoTreino(
-                  icon: Icons.fitness_center_rounded,
-                  valor: '8',
-                  label: 'Exercícios',
-                ),
-              ),
-
-              SizedBox(width: 6),
-
-              Expanded(
-                child: InfoTreino(
-                  icon: Icons.bar_chart_rounded,
-                  valor: '40%',
-                  label: 'Concluído',
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: LinearProgressIndicator(
-              value: indiceAtual / ExerciciosLista.exercicios.length,
-              minHeight: 6,
-              color: AppColors.green,
-              backgroundColor: Color(0xFFE9ECEA),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          const Row(
-            children: [
-              Icon(Icons.star_rounded, color: AppColors.yellow, size: 21),
-              SizedBox(width: 9),
-              Expanded(
-                child: Text(
-                  'Você está no caminho certo! ',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.secondaryText,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          ExercicioCard(
-            key: ValueKey(indiceAtual),
-            numero: indiceAtual + 1,
-            nome: nome,
-            categoria: categoria,
-            series: series,
-            repeticoes: repeticoes,
-            mostrarCronometro: true,
-            onCronometroConcluido: onConcluido,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -652,7 +499,7 @@ class _TreinosListaState extends State<TreinosLista> {
         const Padding(
           padding: EdgeInsets.only(bottom: 10),
           child: Text(
-            'EXERCÍCIOS',
+            'TREINOS',
             style: TextStyle(
               color: AppColors.green,
               fontSize: 18,
@@ -1111,162 +958,6 @@ class _CronometroCompactoState extends State<_CronometroCompacto> {
           ),
         ),
       ],
-    );
-  }
-}
-
-// AVISO
-
-class AvisoCard extends StatelessWidget {
-  const AvisoCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFEEB),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.yellow),
-      ),
-      child: const Row(
-        children: [
-          CircleAvatar(
-            radius: 17,
-            backgroundColor: AppColors.yellow,
-            child: Icon(
-              Icons.info_outline_rounded,
-              color: AppColors.text,
-              size: 20,
-            ),
-          ),
-
-          SizedBox(width: 11),
-
-          Expanded(
-            child: Text(
-              'Respeite seus limites durante o treino.',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11, color: AppColors.text),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// BOTÕES
-
-class BotoesTreino extends StatelessWidget {
-  const BotoesTreino({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Em telas muito estreitas, coloca um embaixo do outro.
-        if (constraints.maxWidth < 330) {
-          return Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: _botaoIniciar(),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 42,
-                child: _botaoCancelar(),
-              ),
-            ],
-          );
-        }
-
-        return Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: SizedBox(height: 44, child: _botaoIniciar()),
-            ),
-
-            const SizedBox(width: 8),
-
-            Expanded(child: SizedBox(height: 44, child: _botaoCancelar())),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _botaoIniciar() {
-    return ElevatedButton.icon(
-      onPressed: () {
-        debugPrint('Iniciar treino');
-      },
-      icon: const Icon(Icons.play_arrow_rounded, size: 19),
-      label: const FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          'INICIAR TREINO',
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
-      ),
-    );
-  }
-
-  Widget _botaoCancelar() {
-    return OutlinedButton(
-      onPressed: () {
-        debugPrint('Cancelar treino');
-      },
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.red,
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        side: const BorderSide(color: AppColors.red),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
-      ),
-      child: const FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          'CANCELAR',
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
-        ),
-      ),
-    );
-  }
-}
-
-// PLACEHOLDER RESPONSIVOr
-
-class PlaceholderFlex extends StatelessWidget {
-  final double height;
-  final double fraction;
-
-  const PlaceholderFlex({super.key, required this.height, this.fraction = 1});
-
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      widthFactor: fraction,
-      alignment: Alignment.centerLeft,
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: AppColors.placeholder,
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
     );
   }
 }
