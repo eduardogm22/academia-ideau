@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class ExercicioPage extends StatefulWidget {
-  const ExercicioPage({super.key});
+  final String nome;
+  const ExercicioPage({super.key, required this.nome});
 
   @override
   State<ExercicioPage> createState() => _ExercicioPageState();
@@ -82,9 +83,9 @@ class _ExercicioPageState extends State<ExercicioPage> {
       appBar: AppBar(
         backgroundColor: AppColors.green,
         foregroundColor: Colors.white,
-        title: const Text(
-          'Alongamento de Pescoço',
-          style: TextStyle(
+        title: Text(
+          widget.nome,
+          style: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w700,
           ),
@@ -114,9 +115,9 @@ class _ExercicioPageState extends State<ExercicioPage> {
 
             const SizedBox(height: 20),
 
-            const Text(
-              'Alongamento de Pescoço',
-              style: TextStyle(
+            Text(
+              widget.nome,
+              style: const TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.w800,
               ),

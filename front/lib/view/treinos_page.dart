@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:front/enums/categorias_treino.dart';
 
 import '../theme/app_colors.dart';
-import 'exercicio_page.dart';
+import 'treino_page.dart';
 
 enum TipoTreino { academia, laboral }
 
@@ -313,7 +311,7 @@ class TelaTreinoLaboral extends StatelessWidget {
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ExerciciosLista(),
+              TreinosLista(),
               SizedBox(height: 14),
               SizedBox(height: 16),
               SizedBox(height: 10),
@@ -343,7 +341,7 @@ class TelaTreinoAcademia extends StatelessWidget {
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ExerciciosLista(),
+              TreinosLista(),
               SizedBox(height: 14),
               SizedBox(height: 16),
               SizedBox(height: 10),
@@ -363,7 +361,6 @@ class TreinoResumoCard extends StatelessWidget {
   final String categoria;
   final String series;
   final String repeticoes;
-  final VoidCallback onConcluido;
 
   const TreinoResumoCard({
     super.key,
@@ -372,7 +369,6 @@ class TreinoResumoCard extends StatelessWidget {
     required this.categoria,
     required this.series,
     required this.repeticoes,
-    required this.onConcluido,
   });
 
   @override
@@ -433,7 +429,9 @@ class TreinosLista extends StatefulWidget {
   const TreinosLista({super.key});
 
   static const treinos = [
-    ('uui1', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
+    ('Treino de Superiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
+    ('Treino de Inferiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.CARDIOVASCULAR),
+    ('Treino Corrida', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.EMAGRECIMENTO),
   ];
 
   @override
@@ -441,61 +439,14 @@ class TreinosLista extends StatefulWidget {
 }
 class _TreinosListaState extends State<TreinosLista> {
   int _indiceAtual = 0;
-  bool _treinoConcluido = false;
-
-  void _concluirAtual() {
-    setState(() {
-      if (_indiceAtual < ExerciciosLista.exercicios.length - 1) {
-        _indiceAtual++;
-      } else {
-        _treinoConcluido = true;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    final exercicioAtual = ExerciciosLista.exercicios[_indiceAtual];
+    final treinoAtual = TreinosLista.treinos[_indiceAtual];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!_treinoConcluido)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: TreinoResumoCard(
-              indiceAtual: _indiceAtual,
-              nome: exercicioAtual.$1,
-              categoria: exercicioAtual.$2,
-              series: exercicioAtual.$3,
-              repeticoes: exercicioAtual.$4,
-              onConcluido: _concluirAtual,
-            ),
-          )
-        else
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.lightGreen,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.green),
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.check_circle_rounded, color: AppColors.green),
-                SizedBox(width: 10),
-                Text(
-                  'Treino concluído!',
-                  style: TextStyle(
-                    color: AppColors.green,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          ),
         const Padding(
           padding: EdgeInsets.only(bottom: 10),
           child: Text(
@@ -507,129 +458,16 @@ class _TreinosListaState extends State<TreinosLista> {
             ),
           ),
         ),
-        ...List.generate(ExerciciosLista.exercicios.length, (index) {
-          if (!_treinoConcluido && index == _indiceAtual) {
-            return const SizedBox.shrink();
-          }
-          final exercicio = ExerciciosLista.exercicios[index];
+        ...List.generate(TreinosLista.treinos.length, (index) {
+          final exercicio = TreinosLista.treinos[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: ExercicioCard(
+            child: TreinoCard(
               numero: index + 1,
               nome: exercicio.$1,
               categoria: exercicio.$2,
               series: exercicio.$3,
               repeticoes: exercicio.$4,
-              concluido: _treinoConcluido || index < _indiceAtual,
-            ),
-          );
-        }),
-      ],
-    );
-  }
-}
-//eduardo
-
-class ExerciciosLista extends StatefulWidget {
-  const ExerciciosLista({super.key});
-
-  static const exercicios = [
-    ('Alongamento de Pescoço', 'Mobilidade', '3 séries', '20 seg'),
-    ('Rotação de Ombros', 'Mobilidade', '3 séries', '15 rep'),
-    ('Alongamento Lateral', 'Flexibilidade', '3 séries', '20 seg'),
-    ('Agachamento Corporal', 'Força', '3 séries', '12 rep'),
-    ('Alongamento da Coluna', 'Mobilidade', '3 séries', '20 seg'),
-    ('Elevação de Panturrilha', 'Força', '3 séries', '15 rep'),
-    ('Rotação de Punhos', 'Mobilidade', '2 séries', '20 seg'),
-    ('Respiração Profunda', 'Relaxamento', '3 séries', '30 seg'),
-  ];
-
-  @override
-  State<ExerciciosLista> createState() => _ExerciciosListaState();
-}
-
-class _ExerciciosListaState extends State<ExerciciosLista> {
-  int _indiceAtual = 0;
-  bool _treinoConcluido = false;
-
-  void _concluirAtual() {
-    setState(() {
-      if (_indiceAtual < ExerciciosLista.exercicios.length - 1) {
-        _indiceAtual++;
-      } else {
-        _treinoConcluido = true;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final exercicioAtual = ExerciciosLista.exercicios[_indiceAtual];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!_treinoConcluido)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: TreinoResumoCard(
-              indiceAtual: _indiceAtual,
-              nome: exercicioAtual.$1,
-              categoria: exercicioAtual.$2,
-              series: exercicioAtual.$3,
-              repeticoes: exercicioAtual.$4,
-              onConcluido: _concluirAtual,
-            ),
-          )
-        else
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.lightGreen,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.green),
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.check_circle_rounded, color: AppColors.green),
-                SizedBox(width: 10),
-                Text(
-                  'Treino concluído!',
-                  style: TextStyle(
-                    color: AppColors.green,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 10),
-          child: Text(
-            'EXERCÍCIOS',
-            style: TextStyle(
-              color: AppColors.green,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        ...List.generate(ExerciciosLista.exercicios.length, (index) {
-          if (!_treinoConcluido && index == _indiceAtual) {
-            return const SizedBox.shrink();
-          }
-          final exercicio = ExerciciosLista.exercicios[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: ExercicioCard(
-              numero: index + 1,
-              nome: exercicio.$1,
-              categoria: exercicio.$2,
-              series: exercicio.$3,
-              repeticoes: exercicio.$4,
-              concluido: _treinoConcluido || index < _indiceAtual,
             ),
           );
         }),
@@ -638,9 +476,8 @@ class _ExerciciosListaState extends State<ExerciciosLista> {
   }
 }
 
-// CARD EXERCÍCIO
 
-class ExercicioCard extends StatelessWidget {
+class TreinoCard extends StatelessWidget {
   final int numero;
   final String nome;
   final String categoria;
@@ -648,9 +485,8 @@ class ExercicioCard extends StatelessWidget {
   final String repeticoes;
   final bool mostrarCronometro;
   final bool concluido;
-  final VoidCallback? onCronometroConcluido;
 
-  const ExercicioCard({
+  const TreinoCard({
     super.key,
     required this.numero,
     required this.nome,
@@ -659,7 +495,6 @@ class ExercicioCard extends StatelessWidget {
     required this.repeticoes,
     this.mostrarCronometro = false,
     this.concluido = false,
-    this.onCronometroConcluido,
   });
 
   @override
@@ -672,7 +507,9 @@ class ExercicioCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ExercicioPage()),
+            MaterialPageRoute(
+              builder: (_) => TreinoPage(),
+            ),
           );
         },
         child: Container(
@@ -730,7 +567,6 @@ class ExercicioCard extends StatelessWidget {
 
                   const SizedBox(width: 10),
 
-                  // Nome do exercício
                   Expanded(
                     flex: 3,
                     child: Column(
@@ -798,166 +634,10 @@ class ExercicioCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (mostrarCronometro) ...[
-                const SizedBox(height: 10),
-                const Divider(height: 1, color: AppColors.border),
-                const SizedBox(height: 10),
-                _CronometroCompacto(onConcluido: onCronometroConcluido),
-              ],
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _CronometroCompacto extends StatefulWidget {
-  final VoidCallback? onConcluido;
-
-  const _CronometroCompacto({this.onConcluido});
-
-  @override
-  State<_CronometroCompacto> createState() => _CronometroCompactoState();
-}
-
-class _CronometroCompactoState extends State<_CronometroCompacto> {
-  static const _totalSeries = 3;
-  static const _duracaoSerie = 20;
-  static const _duracaoTransicao = 3;
-
-  Timer? _timer;
-  int _serieAtual = 1;
-  int _segundos = _duracaoSerie;
-  bool _emTransicao = false;
-  bool _rodando = false;
-  bool _concluido = false;
-
-  void _alternar() {
-    if (_concluido) {
-      _reiniciar();
-      return;
-    }
-    if (_rodando) {
-      _timer?.cancel();
-      setState(() => _rodando = false);
-      return;
-    }
-    setState(() => _rodando = true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _avancar());
-  }
-
-  void _avancar() {
-    if (!mounted) return;
-    setState(() {
-      if (_segundos > 1) {
-        _segundos--;
-      } else if (_emTransicao) {
-        _serieAtual++;
-        _emTransicao = false;
-        _segundos = _duracaoSerie;
-      } else if (_serieAtual < _totalSeries) {
-        _emTransicao = true;
-        _segundos = _duracaoTransicao;
-      } else {
-        _timer?.cancel();
-        _segundos = 0;
-        _rodando = false;
-        _concluido = true;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.onConcluido?.call();
-        });
-      }
-    });
-  }
-
-  void _reiniciar() {
-    _timer?.cancel();
-    setState(() {
-      _serieAtual = 1;
-      _segundos = _duracaoSerie;
-      _emTransicao = false;
-      _rodando = false;
-      _concluido = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 46,
-          height: 46,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: _emTransicao
-                ? AppColors.yellow.withValues(alpha: 0.18)
-                : AppColors.lightGreen,
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            _concluido ? '✓' : '$_segundos',
-            style: TextStyle(
-              color: _emTransicao ? AppColors.text : AppColors.green,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _concluido
-                    ? 'Exercício concluído'
-                    : _emTransicao
-                    ? 'Próxima série em...'
-                    : 'Série $_serieAtual de $_totalSeries',
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 5),
-              LinearProgressIndicator(
-                value: _concluido
-                    ? 1
-                    : _emTransicao
-                    ? (_duracaoTransicao - _segundos) / _duracaoTransicao
-                    : (_duracaoSerie - _segundos) / _duracaoSerie,
-                minHeight: 5,
-                borderRadius: BorderRadius.circular(8),
-                color: _emTransicao ? AppColors.yellow : AppColors.green,
-                backgroundColor: AppColors.border,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        IconButton.filled(
-          onPressed: _alternar,
-          tooltip: _rodando ? 'Pausar' : 'Iniciar',
-          style: IconButton.styleFrom(backgroundColor: AppColors.green),
-          icon: Icon(
-            _concluido
-                ? Icons.refresh_rounded
-                : _rodando
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
-        ),
-      ],
     );
   }
 }
