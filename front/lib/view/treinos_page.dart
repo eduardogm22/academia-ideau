@@ -120,9 +120,7 @@ class _TreinosPageState extends State<TreinosPage> {
             const SizedBox(height: 24),
 
             Expanded(
-              child: tipoTreino == TipoTreino.academia
-                  ? const TelaTreinoAcademia()
-                  : const TelaTreinoLaboral(),
+              child: TelaTreino(tipo: tipoTreino)
             ),
           ],
         ),
@@ -293,8 +291,9 @@ class _OpcaoTreino extends StatelessWidget {
   }
 }
 
-class TelaTreinoLaboral extends StatelessWidget {
-  const TelaTreinoLaboral({super.key});
+class TelaTreino extends StatelessWidget {
+  final TipoTreino tipo = TipoTreino.academia;
+  const TelaTreino({super.key, required tipo});
 
   @override
   Widget build(BuildContext context) {
@@ -311,37 +310,7 @@ class TelaTreinoLaboral extends StatelessWidget {
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TreinosLista(),
-              SizedBox(height: 14),
-              SizedBox(height: 16),
-              SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TelaTreinoAcademia extends StatelessWidget {
-  const TelaTreinoAcademia({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        0,
-        20,
-        100,
-      ), // Padding extra para BottomNav
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TreinosLista(),
+               TreinosAcademiaLista(),
               SizedBox(height: 14),
               SizedBox(height: 16),
               SizedBox(height: 10),
@@ -425,8 +394,8 @@ class InfoTreino extends StatelessWidget {
   }
 }
 //eduardo
-class TreinosLista extends StatefulWidget {
-  const TreinosLista({super.key});
+class TreinosAcademiaLista extends StatefulWidget {
+  const TreinosAcademiaLista({super.key});
 
   static const treinos = [
     ('Treino de Superiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
@@ -435,15 +404,11 @@ class TreinosLista extends StatefulWidget {
   ];
 
   @override
-  State<TreinosLista> createState() => _TreinosListaState();
+  State<TreinosAcademiaLista> createState() => _TreinosAcademiaListaState();
 }
-class _TreinosListaState extends State<TreinosLista> {
-  int _indiceAtual = 0;
-
+class _TreinosAcademiaListaState extends State<TreinosAcademiaLista> {
   @override
   Widget build(BuildContext context) {
-    final treinoAtual = TreinosLista.treinos[_indiceAtual];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -458,8 +423,8 @@ class _TreinosListaState extends State<TreinosLista> {
             ),
           ),
         ),
-        ...List.generate(TreinosLista.treinos.length, (index) {
-          final exercicio = TreinosLista.treinos[index];
+        ...List.generate(TreinosAcademiaLista.treinos.length, (index) {
+          final exercicio = TreinosAcademiaLista.treinos[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: TreinoCard(
@@ -476,6 +441,52 @@ class _TreinosListaState extends State<TreinosLista> {
   }
 }
 
+class TreinosLaboralLista extends StatefulWidget {
+  const TreinosLaboralLista({super.key});
+
+  static const treinos = [
+    ('Treino de Superiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
+    ('Treino de Inferiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.CARDIOVASCULAR),
+    ('Treino Corrida', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.EMAGRECIMENTO),
+  ];
+
+  @override
+  State<TreinosLaboralLista> createState() => _TreinosLaboralListaState();
+}
+class _TreinosLaboralListaState extends State<TreinosLaboralLista> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: Text(
+            'TREINOS',
+            style: TextStyle(
+              color: AppColors.green,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        ...List.generate(TreinosLaboralLista.treinos.length, (index) {
+          final exercicio = TreinosLaboralLista.treinos[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: TreinoCard(
+              numero: index + 1,
+              nome: exercicio.$1,
+              categoria: exercicio.$2,
+              series: exercicio.$3,
+              repeticoes: exercicio.$4,
+            ),
+          );
+        }),
+      ],
+    );
+  }
+}
 
 class TreinoCard extends StatelessWidget {
   final int numero;

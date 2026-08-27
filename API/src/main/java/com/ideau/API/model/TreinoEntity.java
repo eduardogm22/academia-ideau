@@ -1,6 +1,7 @@
 package com.ideau.API.model;
 
 import com.ideau.API.CategoriasTreino;
+import com.ideau.API.enums.TipoTreino;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,15 +18,18 @@ public class TreinoEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(nullable = false)
-    UsuarioEntity aluno;
-
-    @Column(nullable = false)
-    UsuarioEntity professor;
-
     @Column(nullable = false, length = 100)
     String nome;
 
     @Column(nullable = false)
+    UsuarioEntity aluno; //ajustar, adicionar relacionamento
+
+    @Column(nullable = false)
+    UsuarioEntity professor; //ajustar, adicionar relacionamento
+
+    @Column(nullable = false)
     CategoriasTreino categoria;
+
+    @Column(nullable = false)
+    TipoTreino tipoTreino;
 }

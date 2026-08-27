@@ -1,4 +1,4 @@
-Instalar o PostgreSQL versão 16.14.
+Instalar o PostgreSQL versão 16.15.
 
 Acessar o terminal do Postgres (PSQL).
 No Windows, procure psql no menu iniciar.
