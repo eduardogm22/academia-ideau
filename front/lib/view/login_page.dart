@@ -29,15 +29,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Chave global do formulário para disparar validações
   final _formKey = GlobalKey<FormState>();
 
-  // Controladores de texto para capturar os dados
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Estado para visibilidade da senha
   bool _isPasswordObscured = true;
+  bool _isLoading = false; // Controla o estado do botão de carregamento
 
   @override
   void dispose() {
@@ -46,22 +44,61 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    // Valida todos os campos do Form
+  // 2. FUNÇÃO QUE CONECTA A TELA COM A CLASSE USUARIO
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      // Resgata os valores digitados
-      final login = _loginController.text;
-      final password = _passwordController.text;
+      setState(() {
+        _isLoading = true;
+      });
 
-      // Exibe mensagem de sucesso com os dados capturados
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Autenticando usuário: $login...'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      try {
+        // Simulação de chamada assíncrona ao backend
+        await Future.delayed(const Duration(seconds: 2));
 
-      // TODO: Insira aqui a chamada da sua API ou navegação
+        // Dados simulados retornados pela API no formato do seu primeiro código
+        final Map<String, dynamic> jsonResponse = {
+          'id': 'usr_001',
+          'nome': 'João Silva',
+          'email': _loginController.text,
+          'cargo': 'gerente', // Deve existir dentro do enum 'Cargos'
+          'setor': Setor(id: '1', nome: 'TI'), // Instância da classe Setor
+        };
+
+        // 3. INSTANCIAÇÃO DA CLASSE USUARIO USANDO O MÉTODO fromJSON
+        final Usuario usuarioLogado = Usuario.fromJSON(jsonResponse);
+
+        if (!mounted) return;
+
+        // Feedback visual de sucesso
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Bem-vindo(a), ${usuarioLogado.nome}!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // 4. NAVEGAÇÃO PARA A PRÓXIMA TELA PASSANDO O USUÁRIO LOGADO
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(usuario: usuarioLogado),
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao efetuar login: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -87,24 +124,24 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // Campo: Login / Usuário / E-mail
+                // Campo Usuário / E-mail
                 TextFormField(
                   controller: _loginController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    labelText: 'Usuário',
+                    labelText: 'E-mail / Usuário',
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Login';
+                      return 'Por favor, informe o e-mail / usuário';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
 
-                // Campo: Senha
+                // Campo Senha
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _isPasswordObscured,
@@ -129,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                       return 'Por favor, digite sua senha';
                     }
                     if (value.length < 5) {
-                      return 'Senha';
+                      return 'A senha deve ter pelo menos 5 caracteres';
                     }
                     return null;
                   },
@@ -138,11 +175,17 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Botão de Login
                 ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('ENTRAR'),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('ENTRAR'),
                 ),
               ],
             ),
@@ -150,5 +193,79 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+}
+
+// 5. TELA DE EXEMP LO QUE RECEBE O USUÁRIO LOGADO
+class HomePage extends StatelessWidget {
+  final Usuario usuario;
+
+  const HomePage({super.key, required this.usuario});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Painel - ${usuario.nome}'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('ID: ${usuario.id ?? "Não informado"}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 8),
+            Text('Email: ${usuario.email ?? "Não informado"}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 8),
+            Text('Cargo: ${usuario.cargo.name}', style: const TextStyle(fontSize: 16)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// MOCK TEMPORÁRIO DAS CLASSES PARA RODAR O CÓDIGO (Remova no seu projeto)
+enum Cargos { gerente, admin, desenvolvedor }
+
+class Setor {
+  final String id;
+  final String nome;
+  Setor({required this.id, required this.nome});
+}
+
+class Usuario {
+  String? id;
+  String nome;
+  String? email;
+  Cargos cargo;
+  Setor setor;
+
+  Usuario({
+    this.id,
+    required this.nome,
+    this.email,
+    required this.cargo,
+    required this.setor,
+  });
+
+  factory Usuario.fromJSON(Map<String, dynamic> json) {
+    return Usuario(
+      id: json['id'],
+      nome: json['nome'],
+      email: json['email'],
+      cargo: Cargos.values.byName(json['cargo']),
+      setor: json['setor'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
+    json['id'] = id;
+    json['nome'] = nome;
+    json['email'] = email;
+    json['cargo'] = cargo.name;
+    json['setor'] = setor;
+    return json;
   }
 }
