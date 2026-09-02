@@ -21,15 +21,25 @@ public class TreinoEntity {
     @Column(nullable = false, length = 100)
     String nome;
 
-    @Column(nullable = false)
-    UsuarioEntity aluno; //ajustar, adicionar relacionamento
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aluno_id", nullable = false)
+    UsuarioEntity aluno;
 
-    @Column(nullable = false)
-    UsuarioEntity professor; //ajustar, adicionar relacionamento
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "professor_id", nullable = false)
+    UsuarioEntity professor;
 
     @Column(nullable = false)
     CategoriasTreino categoria;
 
     @Column(nullable = false)
     TipoTreino tipoTreino;
+
+    public TreinoEntity(String nome, UsuarioEntity aluno, UsuarioEntity professor, CategoriasTreino categoria, TipoTreino tipoTreino) {
+        this.nome = nome;
+        this.aluno = aluno;
+        this.professor = professor;
+        this.categoria = categoria;
+        this.tipoTreino = tipoTreino;
+    }
 }
