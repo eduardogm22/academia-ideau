@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
@@ -25,6 +27,17 @@ public class UsuarioController {
         return ResponseEntity.ok().body(usuarioService.cadastra(usuarioInDTO));
     }
     @GetMapping
+    public ResponseEntity<List<UsuarioOutDTO>> retornarTodosUsuarios() {
+        List<UsuarioEntity> lstEntities = usuarioService.retornaTodos();
+
+        List<UsuarioOutDTO> lstRetorno = lstEntities
+                .stream()
+                .map(UsuarioOutDTO::fromEntity)
+                .toList();
+
+        return ResponseEntity.ok().body(lstRetorno);
+    }
+    @GetMapping("/{id}")
     public ResponseEntity<UsuarioOutDTO> retornarUsuarioPorId(@PathParam("id") String id) {
         UsuarioEntity usuarioEntity = usuarioService.retornaPorId(id);
         return ResponseEntity.ok(

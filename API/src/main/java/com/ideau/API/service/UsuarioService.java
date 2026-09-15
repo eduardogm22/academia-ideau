@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
+
 @Service
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
@@ -36,6 +38,9 @@ public class UsuarioService {
         );
         usuarioRepository.save(usuarioEntity);
         return UsuarioOutDTO.fromEntity(usuarioEntity);
+    }
+    public List<UsuarioEntity> retornaTodos() {
+        return usuarioRepository.findAll();
     }
     public UsuarioEntity retornaPorId(String id) {
         UsuarioEntity usuarioEntity = usuarioRepository.findById(id).orElse(null);

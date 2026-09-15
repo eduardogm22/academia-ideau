@@ -1,7 +1,6 @@
-package com.ideau.API;
+package com.ideau.API.enums;
 
 public enum CategoriasTreino {
-    LABORAL,
     HIPERTROFIA,
     FORCA,
     RESISTENCIA,
@@ -10,5 +9,6 @@ public enum CategoriasTreino {
     HIIT,
     FUNCIONAL,
     TERAPEUTICO,
-    EMAGRECIMENTO
+    EMAGRECIMENTO,
+    ALONGAMENTO
 }

@@ -1,12 +1,15 @@
 package com.ideau.API.model;
 
-import com.ideau.API.CategoriasTreino;
+import com.ideau.API.enums.CategoriasTreino;
 import com.ideau.API.enums.TipoTreino;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,6 +37,13 @@ public class TreinoEntity {
 
     @Column(nullable = false)
     TipoTreino tipoTreino;
+
+    @OneToMany(
+            mappedBy = "treinoEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TreinoExercicioEntity> exercicios = new ArrayList<>();
 
     public TreinoEntity(String nome, UsuarioEntity aluno, UsuarioEntity professor, CategoriasTreino categoria, TipoTreino tipoTreino) {
         this.nome = nome;

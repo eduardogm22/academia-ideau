@@ -1,6 +1,6 @@
 package com.ideau.API.dto;
 
-import com.ideau.API.CategoriasTreino;
+import com.ideau.API.enums.CategoriasTreino;
 import com.ideau.API.enums.TipoTreino;
 import com.ideau.API.model.TreinoEntity;
 
