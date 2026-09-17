@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:front/enums/categorias_treino.dart';
+import 'package:front/enums/tipo_treino.dart';
+import 'package:front/controller/APIController.dart';
+import 'package:front/model/treino.dart';
 
 import '../theme/app_colors.dart';
 import 'treino_page.dart';
-
-enum TipoTreino { academia, laboral }
 
 class TreinosPage extends StatefulWidget {
   const TreinosPage({super.key});
@@ -14,7 +14,7 @@ class TreinosPage extends StatefulWidget {
 }
 
 class _TreinosPageState extends State<TreinosPage> {
-  TipoTreino tipoTreino = TipoTreino.academia;
+  TipoTreino tipoTreino = TipoTreino.ACADEMIA;
 
   void _escolherTipoTreino(TipoTreino tipo) {
     setState(() {
@@ -66,16 +66,16 @@ class _TreinosPageState extends State<TreinosPage> {
                 titulo: 'Treino de Academia',
                 descricao: 'Força, hipertrofia e condicionamento',
                 icone: Icons.fitness_center_rounded,
-                selecionado: tipoTreino == TipoTreino.academia,
-                onTap: () => _escolherTipoTreino(TipoTreino.academia),
+                selecionado: tipoTreino == TipoTreino.ACADEMIA,
+                onTap: () => _escolherTipoTreino(TipoTreino.ACADEMIA),
               ),
               const SizedBox(height: 12),
               _OpcaoTreino(
                 titulo: 'Treino Laboral',
                 descricao: 'Alongamentos e exercícios no trabalho',
                 icone: Icons.accessibility_new_rounded,
-                selecionado: tipoTreino == TipoTreino.laboral,
-                onTap: () => _escolherTipoTreino(TipoTreino.laboral),
+                selecionado: tipoTreino == TipoTreino.LABORAL,
+                onTap: () => _escolherTipoTreino(TipoTreino.LABORAL),
               ),
               const SizedBox(height: 16),
             ],
@@ -141,7 +141,7 @@ class ModalidadeSelectorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAcademia = tipo == TipoTreino.academia;
+    final bool isAcademia = tipo == TipoTreino.ACADEMIA;
 
     return GestureDetector(
       onTap: onTap,
@@ -292,28 +292,21 @@ class _OpcaoTreino extends StatelessWidget {
 }
 
 class TelaTreino extends StatelessWidget {
-  final TipoTreino tipo = TipoTreino.academia;
-  const TelaTreino({super.key, required tipo});
+  final TipoTreino tipo;
+  const TelaTreino({super.key, required this.tipo});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        0,
-        20,
-        100,
-      ), // Padding extra para BottomNav
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               TreinosAcademiaLista(),
-              SizedBox(height: 14),
-              SizedBox(height: 16),
-              SizedBox(height: 10),
+              TreinosLista(tipo: tipo),
+              const SizedBox(height: 14),
             ],
           ),
         ),
@@ -322,93 +315,15 @@ class TelaTreino extends StatelessWidget {
   }
 }
 
-// RESUMO
-
-class TreinoResumoCard extends StatelessWidget {
-  final int indiceAtual;
-  final String nome;
-  final String categoria;
-  final String series;
-  final String repeticoes;
-
-  const TreinoResumoCard({
-    super.key,
-    required this.indiceAtual,
-    required this.nome,
-    required this.categoria,
-    required this.series,
-    required this.repeticoes,
-  });
+class TreinosLista extends StatelessWidget {
+  final TipoTreino tipo;
+  const TreinosLista({super.key, required this.tipo});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-    );
-  }
-}
+    // ID de usuário da sessão
+    final String idUsuario = Session.usuario?.id ?? ''; 
 
-// INFORMAÇÕES
-
-class InfoTreino extends StatelessWidget {
-  final IconData icon;
-  final String valor;
-  final String label;
-
-  const InfoTreino({
-    super.key,
-    required this.icon,
-    required this.valor,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: const BoxDecoration(
-            color: AppColors.lightGreen,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: AppColors.green, size: 15),
-        ),
-
-        const SizedBox(height: 6),
-
-        Text(
-          valor,
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
-        ),
-
-        const SizedBox(height: 4),
-
-        Text(
-          label,
-          style: const TextStyle(color: AppColors.secondaryText, fontSize: 8),
-        ),
-      ],
-    );
-  }
-}
-//eduardo
-class TreinosAcademiaLista extends StatefulWidget {
-  const TreinosAcademiaLista({super.key});
-
-  static const treinos = [
-    ('Treino de Superiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
-    ('Treino de Inferiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.CARDIOVASCULAR),
-    ('Treino Corrida', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.EMAGRECIMENTO),
-  ];
-
-  @override
-  State<TreinosAcademiaLista> createState() => _TreinosAcademiaListaState();
-}
-class _TreinosAcademiaListaState extends State<TreinosAcademiaLista> {
-  @override
-  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -423,66 +338,59 @@ class _TreinosAcademiaListaState extends State<TreinosAcademiaLista> {
             ),
           ),
         ),
-        ...List.generate(TreinosAcademiaLista.treinos.length, (index) {
-          final exercicio = TreinosAcademiaLista.treinos[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: TreinoCard(
-              numero: index + 1,
-              nome: exercicio.$1,
-              categoria: exercicio.$2,
-              series: exercicio.$3,
-              repeticoes: exercicio.$4,
-            ),
-          );
-        }),
-      ],
-    );
-  }
-}
+        FutureBuilder<List<Treino>>(
+          future: getTreinos(idUsuario, tipo),
+          builder: (context, snapshot) {
+//... rest of the code
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(color: AppColors.green),
+                ),
+              );
+            }
 
-class TreinosLaboralLista extends StatefulWidget {
-  const TreinosLaboralLista({super.key});
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Erro ao carregar treinos: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
 
-  static const treinos = [
-    ('Treino de Superiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.HIPERTROFIA),
-    ('Treino de Inferiores', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.CARDIOVASCULAR),
-    ('Treino Corrida', '', '', 'Treino de Costas e Tríceps', CategoriasTreino.EMAGRECIMENTO),
-  ];
+            final treinos = snapshot.data ?? [];
 
-  @override
-  State<TreinosLaboralLista> createState() => _TreinosLaboralListaState();
-}
-class _TreinosLaboralListaState extends State<TreinosLaboralLista> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 10),
-          child: Text(
-            'TREINOS',
-            style: TextStyle(
-              color: AppColors.green,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+            if (treinos.isEmpty) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text(
+                    'Nenhum treino encontrado para esta categoria.',
+                    style: TextStyle(color: AppColors.secondaryText),
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: treinos.asMap().entries.map((entry) {
+                final index = entry.key;
+                final treino = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: TreinoCard(
+                    numero: index + 1,
+                    treino: treino,
+                    series: '', // Pode vir de outra tabela ou DTO se necessário
+                    repeticoes: '',
+                  ),
+                );
+              }).toList(),
+            );
+          },
         ),
-        ...List.generate(TreinosLaboralLista.treinos.length, (index) {
-          final exercicio = TreinosLaboralLista.treinos[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: TreinoCard(
-              numero: index + 1,
-              nome: exercicio.$1,
-              categoria: exercicio.$2,
-              series: exercicio.$3,
-              repeticoes: exercicio.$4,
-            ),
-          );
-        }),
       ],
     );
   }
@@ -490,21 +398,17 @@ class _TreinosLaboralListaState extends State<TreinosLaboralLista> {
 
 class TreinoCard extends StatelessWidget {
   final int numero;
-  final String nome;
-  final String categoria;
+  final Treino treino;
   final String series;
   final String repeticoes;
-  final bool mostrarCronometro;
   final bool concluido;
 
   const TreinoCard({
     super.key,
     required this.numero,
-    required this.nome,
-    required this.categoria,
+    required this.treino,
     required this.series,
     required this.repeticoes,
-    this.mostrarCronometro = false,
     this.concluido = false,
   });
 
@@ -519,7 +423,7 @@ class TreinoCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => TreinoPage(),
+              builder: (_) => TreinoPage(treino: treino),
             ),
           );
         },
@@ -530,120 +434,116 @@ class TreinoCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: AppColors.border),
           ),
-          child: Column(
+          child: Row(
             children: [
-              Row(
-                children: [
-                  // Número
-                  Container(
-                    width: 36,
-                    height: 36,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: concluido ? AppColors.lightGreen : AppColors.green,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: concluido
-                        ? const Icon(
-                            Icons.check_rounded,
-                            color: AppColors.green,
-                            size: 20,
-                          )
-                        : Text(
-                            '$numero',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  // Ícone
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: const BoxDecoration(
-                      color: AppColors.lightGreen,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.accessibility_new_rounded,
-                      color: AppColors.green,
-                      size: 21,
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          nome,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                          ),
+              // Número
+              Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: concluido ? AppColors.lightGreen : AppColors.green,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: concluido
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.green,
+                        size: 20,
+                      )
+                    : Text(
+                        '$numero',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          categoria,
-                          style: const TextStyle(
-                            color: AppColors.secondaryText,
-                            fontSize: 8,
-                          ),
-                        ),
-                      ],
+                      ),
+              ),
+
+              const SizedBox(width: 8),
+
+              // Ícone
+              Container(
+                width: 38,
+                height: 38,
+                decoration: const BoxDecoration(
+                  color: AppColors.lightGreen,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.accessibility_new_rounded,
+                  color: AppColors.green,
+                  size: 21,
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      treino.nome,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  // Séries / reps
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          series,
-                          style: const TextStyle(
-                            color: AppColors.green,
-                            fontSize: 8,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          repeticoes,
-                          style: const TextStyle(
-                            color: AppColors.secondaryText,
-                            fontSize: 8,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 3),
+                    Text(
+                      treino.categoria.name,
+                      style: const TextStyle(
+                        color: AppColors.secondaryText,
+                        fontSize: 8,
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
 
-                  const SizedBox(width: 3),
+              const SizedBox(width: 8),
 
-                  Icon(
-                    concluido
-                        ? Icons.check_circle_rounded
-                        : Icons.chevron_right_rounded,
-                    size: 20,
-                    color: concluido
-                        ? AppColors.green
-                        : AppColors.secondaryText,
-                  ),
-                ],
+              // Séries / reps
+              Expanded(
+                flex: 1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      series,
+                      style: const TextStyle(
+                        color: AppColors.green,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      repeticoes,
+                      style: const TextStyle(
+                        color: AppColors.secondaryText,
+                        fontSize: 8,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 3),
+
+              Icon(
+                concluido
+                    ? Icons.check_circle_rounded
+                    : Icons.chevron_right_rounded,
+                size: 20,
+                color: concluido
+                    ? AppColors.green
+                    : AppColors.secondaryText,
               ),
             ],
           ),

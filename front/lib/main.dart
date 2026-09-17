@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front/view/login_page.dart';
 
 import 'view/treinos_page.dart';
 import 'view/relatorios_page.dart';
@@ -20,7 +21,7 @@ class AcademiaIdeauApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Laboral',
       theme: AppTheme.lightTheme,
-      home: const MainNavigation(),
+      home: const LoginPage(),
     );
   }
 }

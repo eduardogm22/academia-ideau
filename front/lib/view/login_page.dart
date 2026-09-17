@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
-    );
-  }
-}
+import 'package:front/controller/APIController.dart';
+import 'package:front/main.dart';
+import 'package:front/theme/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,15 +11,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Chave global do formulário para disparar validações
   final _formKey = GlobalKey<FormState>();
 
-  // Controladores de texto para capturar os dados
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Estado para visibilidade da senha
   bool _isPasswordObscured = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -46,28 +26,37 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    // Valida todos os campos do Form
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      // Resgata os valores digitados
-      final login = _loginController.text;
-      final password = _passwordController.text;
-
-      // Exibe mensagem de sucesso com os dados capturados
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Autenticando usuário: $login...'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      // TODO: Insira aqui a chamada da sua API ou navegação
+      setState(() => _isLoading = true);
+      
+      try {
+        await login(_loginController.text, _passwordController.text);
+        
+        if (!mounted) return;
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainNavigation()),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -78,44 +67,58 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'Login',
+                  'LOGIN',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontFamily: 'BebasNeue',
+                    fontSize: 48,
                     fontWeight: FontWeight.bold,
+                    color: AppColors.green,
                   ),
                 ),
                 const SizedBox(height: 32),
 
-                // Campo: Login / Usuário / E-mail
                 TextFormField(
                   controller: _loginController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Usuário',
-                    border: OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: AppColors.secondaryText),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.green, width: 2),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Login';
+                      return 'Digite seu usuário';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
 
-                // Campo: Senha
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _isPasswordObscured,
                   decoration: InputDecoration(
                     labelText: 'Senha',
-                    border: const OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: AppColors.secondaryText),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.green, width: 2),
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordObscured
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: AppColors.secondaryText,
                       ),
                       onPressed: () {
                         setState(() {
@@ -128,21 +131,39 @@ class _LoginPageState extends State<LoginPage> {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, digite sua senha';
                     }
-                    if (value.length < 5) {
-                      return 'Senha';
-                    }
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
-                // Botão de Login
                 ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.green,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
                   ),
-                  child: const Text('ENTRAR'),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'ENTRAR',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
                 ),
               ],
             ),

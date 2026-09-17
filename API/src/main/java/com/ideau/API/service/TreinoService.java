@@ -36,8 +36,8 @@ public class TreinoService {
         return treinoEntity;
     }
 
-    public List<TreinoOutDTO> retornaTreinosPorTipo(TipoTreino tipoTreino) {
-        try (Stream<TreinoEntity> treinoEntityStream = treinoRepository.findAllByTipoTreino(tipoTreino).stream()) {
+    public List<TreinoOutDTO> retornaTreinosPorTipo(String alunoId, TipoTreino tipoTreino) {
+        try (Stream<TreinoEntity> treinoEntityStream = treinoRepository.findAllByAlunoIdAndTipoTreino(alunoId, tipoTreino).stream()) {
             return treinoEntityStream
                     .map(TreinoOutDTO::fromEntity)
                     .toList();

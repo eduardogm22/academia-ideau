@@ -44,4 +44,9 @@ public class UsuarioController {
                 UsuarioOutDTO.fromEntity(usuarioEntity)
         );
     }
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioOutDTO> verificarLogin(String username, String senha) {
+        UsuarioEntity usuarioEntity = usuarioService.verificaLogin(username, senha);
+        return ResponseEntity.ok().body(UsuarioOutDTO.fromEntity(usuarioEntity));
+    }
 }

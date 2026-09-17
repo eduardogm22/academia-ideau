@@ -9,5 +9,7 @@ import java.util.List;
 
 @Repository
 public interface TreinoRepository extends JpaRepository<TreinoEntity, String> {
-    List<TreinoEntity> findAllByTipoTreino(TipoTreino tipoTreino);
+    List<TreinoEntity> findAllByAlunoIdAndTipoTreino(
+            String alunoId,
+            TipoTreino tipoTreino);
 }

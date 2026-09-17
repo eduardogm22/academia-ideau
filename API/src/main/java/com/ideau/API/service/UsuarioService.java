@@ -49,4 +49,11 @@ public class UsuarioService {
         }
         return usuarioEntity;
     }
+    public UsuarioEntity verificaLogin(String username, String senha) {
+        UsuarioEntity usuarioEntity = usuarioRepository.findByUsernameAndSenha(username, senha);
+        if (usuarioEntity == null) {
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Acesso Negado!");
+        }
+        return usuarioEntity;
+    }
 }

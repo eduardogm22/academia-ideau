@@ -27,9 +27,11 @@ public class TreinoController {
         );
     }
 
-    @GetMapping(params = "tipoTreino")
-    public ResponseEntity<List<TreinoOutDTO>> retornarTreinosPorTipo(@RequestParam TipoTreino tipoTreino) {
-        List<TreinoOutDTO> treinos = treinoService.retornaTreinosPorTipo(tipoTreino);
+    @GetMapping(params = {"idUsuario", "tipoTreino"})
+    public ResponseEntity<List<TreinoOutDTO>> retornarTreinosPorTipo(
+            @RequestParam TipoTreino tipoTreino,
+            @RequestParam String idUsuario) {
+        List<TreinoOutDTO> treinos = treinoService.retornaTreinosPorTipo(idUsuario, tipoTreino);
         return ResponseEntity.ok().body(treinos);
     }
 }

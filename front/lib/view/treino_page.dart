@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:front/model/treino.dart';
 
 import '../theme/app_colors.dart';
 import 'exercicio_page.dart';
 
 class TreinoPage extends StatelessWidget {
-  const TreinoPage({super.key});
+  final Treino treino;
+  const TreinoPage({super.key, required this.treino});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class TreinoPage extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            const TreinoHeader(),
+            TreinoHeader(nomeTreino: treino.nome),
 
             Expanded(
               child: SingleChildScrollView(
@@ -22,14 +24,14 @@ class TreinoPage extends StatelessWidget {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 520),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TreinoResumoCard(),
+                        TreinoResumoCard(treino: treino),
 
-                        SizedBox(height: 22),
+                        const SizedBox(height: 22),
 
-                        Text(
+                        const Text(
                           'EXERCÍCIOS',
                           style: TextStyle(
                             color: AppColors.green,
@@ -38,19 +40,19 @@ class TreinoPage extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
 
-                        ExerciciosLista(),
+                        const ExerciciosLista(),
 
-                        SizedBox(height: 14),
+                        const SizedBox(height: 14),
 
-                        AvisoCard(),
+                        const AvisoCard(),
 
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                        BotoesTreino(),
+                        const BotoesTreino(),
 
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
@@ -67,7 +69,8 @@ class TreinoPage extends StatelessWidget {
 // CABEÇALHO
 
 class TreinoHeader extends StatelessWidget {
-  const TreinoHeader({super.key});
+  final String nomeTreino;
+  const TreinoHeader({super.key, required this.nomeTreino});
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +83,13 @@ class TreinoHeader extends StatelessWidget {
           bottomRight: Radius.circular(34),
         ),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'MEU TREINO',
                   style: TextStyle(
                     fontFamily: 'BebasNeue',
@@ -98,10 +101,10 @@ class TreinoHeader extends StatelessWidget {
                     wordSpacing: -1.5,
                   ),
                 ),
-                SizedBox(height: 3),
+                const SizedBox(height: 3),
                 Text(
-                  'Seu treino laboral de hoje',
-                  style: TextStyle(
+                  nomeTreino,
+                  style: const TextStyle(
                     color: Color(0xFFE3F0E8),
                     fontSize: 13,
                   ),
@@ -110,7 +113,7 @@ class TreinoHeader extends StatelessWidget {
             ),
           ),
 
-          NotificacaoIcon(),
+          const NotificacaoIcon(),
         ],
       ),
     );
@@ -150,7 +153,8 @@ class NotificacaoIcon extends StatelessWidget {
 // RESUMO
 
 class TreinoResumoCard extends StatelessWidget {
-  const TreinoResumoCard({super.key});
+  final Treino treino;
+  const TreinoResumoCard({super.key, required this.treino});
 
   @override
   Widget build(BuildContext context) {
@@ -204,21 +208,21 @@ class TreinoResumoCard extends StatelessWidget {
 
               const SizedBox(width: 12),
 
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Alongamento de Pescoço',
-                      style: TextStyle(
+                      treino.nome,
+                      style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     Text(
-                      'Mobilidade e alongamento',
-                      style: TextStyle(
+                      treino.categoria.name,
+                      style: const TextStyle(
                         color: AppColors.secondaryText,
                         fontSize: 12,
                       ),
@@ -228,6 +232,7 @@ class TreinoResumoCard extends StatelessWidget {
               ),
             ],
           ),
+// ... keep the rest of the file content for InfoTreino, etc.
 
           const SizedBox(height: 22),
 
