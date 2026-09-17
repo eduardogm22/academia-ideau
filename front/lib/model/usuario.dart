@@ -22,7 +22,7 @@ class Usuario {
         nome: json['nome'],
         email: json['email'],
         cargo: Cargos.values.byName(json['cargo']),
-        setor: json['setor']
+        setor: Setor.fromJSON(json['setor'])
     );
   }
   Map<String, dynamic> toJson() {
@@ -30,8 +30,8 @@ class Usuario {
     json['id'] = id;
     json['nome'] = nome;
     json['email'] = email;
-    json['cargo'] = cargo.toString();
-    json['setor'] = setor;
+    json['cargo'] = cargo.name;
+    json['setor'] = setor.toJson();
     return json;
   }
 }

@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
-    );
-  }
-}
+import 'package:front/controller/APIController.dart';
+import 'package:front/main.dart';
+import 'package:front/theme/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -44,45 +26,18 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // 2. FUNÇÃO QUE CONECTA A TELA COM A CLASSE USUARIO
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
+      setState(() => _isLoading = true);
+      
       try {
-        // Simulação de chamada assíncrona ao backend
-        await Future.delayed(const Duration(seconds: 2));
-
-        // Dados simulados retornados pela API no formato do seu primeiro código
-        final Map<String, dynamic> jsonResponse = {
-          'id': 'usr_001',
-          'nome': 'João Silva',
-          'email': _loginController.text,
-          'cargo': 'gerente', // Deve existir dentro do enum 'Cargos'
-          'setor': Setor(id: '1', nome: 'TI'), // Instância da classe Setor
-        };
-
-        // 3. INSTANCIAÇÃO DA CLASSE USUARIO USANDO O MÉTODO fromJSON
-        final Usuario usuarioLogado = Usuario.fromJSON(jsonResponse);
-
+        await login(_loginController.text, _passwordController.text);
+        
         if (!mounted) return;
-
-        // Feedback visual de sucesso
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Bem-vindo(a), ${usuarioLogado.nome}!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // 4. NAVEGAÇÃO PARA A PRÓXIMA TELA PASSANDO O USUÁRIO LOGADO
+        
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(usuario: usuarioLogado),
-          ),
+          MaterialPageRoute(builder: (context) => const MainNavigation()),
         );
       } catch (e) {
         if (!mounted) return;
@@ -93,11 +48,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
@@ -105,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -115,11 +67,13 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'Login',
+                  'LOGIN',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontFamily: 'BebasNeue',
+                    fontSize: 48,
                     fontWeight: FontWeight.bold,
+                    color: AppColors.green,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -128,13 +82,24 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _loginController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'E-mail / Usuário',
-                    border: OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: AppColors.secondaryText),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.green, width: 2),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Por favor, informe o e-mail / usuário';
+                    }
+                    return null;
+                  },
+                ),
                     }
                     return null;
                   },
@@ -147,12 +112,20 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: _isPasswordObscured,
                   decoration: InputDecoration(
                     labelText: 'Senha',
-                    border: const OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: AppColors.secondaryText),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.green, width: 2),
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordObscured
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: AppColors.secondaryText,
                       ),
                       onPressed: () {
                         setState(() {
@@ -171,21 +144,36 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
-                // Botão de Login
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.green,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
                   ),
                   child: _isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
-                      : const Text('ENTRAR'),
+                      : const Text(
+                          'ENTRAR',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
                 ),
               ],
             ),

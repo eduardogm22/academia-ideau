@@ -1,9 +1,10 @@
 package com.ideau.API.controller;
 
+import com.ideau.API.dto.TreinoInDTO;
+import com.ideau.API.dto.TreinoOutDTO;
 import com.ideau.API.enums.TipoTreino;
 import com.ideau.API.model.TreinoEntity;
 import com.ideau.API.service.TreinoService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +19,19 @@ public class TreinoController {
         this.treinoService = treinoService;
     }
 
-    @GetMapping(params = "tipoTreino")
-    public ResponseEntity<List<TreinoEntity>> retornarTreinosPorTipo(@RequestParam TipoTreino tipoTreino) {
-        List<TreinoEntity> treinos = treinoService.retornaTreinosPorTipo(tipoTreino);
-        return ResponseEntity.ok().build();
+    @PostMapping
+    public ResponseEntity<TreinoOutDTO> cadastrarTreino(TreinoInDTO treinoInDTO) {
+        TreinoEntity treinoEntity = treinoService.cadastra(treinoInDTO);
+        return ResponseEntity.ok(
+                TreinoOutDTO.fromEntity(treinoEntity)
+        );
+    }
+
+    @GetMapping(params = {"idUsuario", "tipoTreino"})
+    public ResponseEntity<List<TreinoOutDTO>> retornarTreinosPorTipo(
+            @RequestParam TipoTreino tipoTreino,
+            @RequestParam String idUsuario) {
+        List<TreinoOutDTO> treinos = treinoService.retornaTreinosPorTipo(idUsuario, tipoTreino);
+        return ResponseEntity.ok().body(treinos);
     }
 }
